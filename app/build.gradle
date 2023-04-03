@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.adidas.threestripes'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.adidas.threestripes"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+/// region lint
+dependencies {
+    lintChecks project(':adidas-lint-rules')
+}
+/// endregion
+
+/// region ktlint
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint("com.pinterest:ktlint:0.48.2")
+    ktlint project(":adidas-ktlint-rules")
+}
+
+task ktlint(type: JavaExec, group: "verification", description: "Runs ktlint.") {
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args = [
+            "**/src/**/*.kt",
+            "**.kts",
+            "!**/build/**",
+    ]
+}
+
+task ktlintFormat(type: JavaExec) {
+    description = "Runs ktlint and autoformats your code."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args = [
+            "-F",
+            "**/src/**/*.kt",
+            "**.kts",
+            "!**/build/**",
+    ]
+}
+/// endregion
+
